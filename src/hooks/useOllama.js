@@ -1,25 +1,23 @@
 import { useState } from 'react';
-import { useChat } from '../context/ChatContext';
+import { useGlobal } from '../context/global-context';
 
 export function useOllama() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { dispatch } = useChat();
+  const { dispatch } = useGlobal();
 
   const sendMessage = async (prompt) => {
     setLoading(true);
     setError(null);
 
-    // 1. Add user message to context
-    dispatch({ 
-      type: 'ADD_MESSAGE', 
-      payload: { role: 'user', content: prompt } 
+    dispatch({
+      type: '@add_message',
+      payload: { role: 'user', content: prompt }
     });
 
-    // 2. Prepare for assistant response
-    dispatch({ 
-      type: 'ADD_MESSAGE', 
-      payload: { role: 'assistant', content: '' } 
+    dispatch({
+      type: '@add_message',
+      payload: { role: 'assistant', content: '' }
     });
 
     try {
@@ -27,7 +25,7 @@ export function useOllama() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'deepseek-r1:1.5b', // Or whatever model is available
+          model: 'deepseek-r1:1.5b',
           prompt: prompt,
           stream: true,
         }),
@@ -54,9 +52,9 @@ export function useOllama() {
             const json = JSON.parse(line);
             if (json.response) {
               fullResponse += json.response;
-              dispatch({ 
-                type: 'SET_STREAMING_MESSAGE', 
-                payload: fullResponse 
+              dispatch({
+                type: '@update_last_message',
+                payload: fullResponse
               });
             }
           } catch (e) {
@@ -67,9 +65,9 @@ export function useOllama() {
     } catch (err) {
       console.error('Ollama Error:', err);
       setError(err.message);
-      dispatch({ 
-        type: 'SET_STREAMING_MESSAGE', 
-        payload: 'Error: ' + err.message 
+      dispatch({
+        type: '@update_last_message',
+        payload: 'Error: ' + err.message
       });
     } finally {
       setLoading(false);

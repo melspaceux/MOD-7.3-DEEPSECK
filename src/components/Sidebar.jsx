@@ -1,14 +1,14 @@
 import React from 'react';
-import { useChat } from '../context/ChatContext';
+import { useGlobal } from '../context/global-context';
 
 export function Sidebar() {
-  const { state, dispatch } = useChat();
+  const { state, dispatch } = useGlobal();
 
   return (
     <aside className="sidebar">
       <button 
         className="new-chat-btn"
-        onClick={() => dispatch({ type: 'NEW_CHAT' })}
+        onClick={() => dispatch({ type: '@save_history' })}
       >
         <span className="plus-icon">+</span> Nuevo Chat
       </button>
@@ -21,8 +21,8 @@ export function Sidebar() {
           state.history.map((chat) => (
             <div 
               key={chat.id} 
-              className={`history-item ${state.currentChatId === chat.id ? 'active' : ''}`}
-              onClick={() => dispatch({ type: 'SELECT_CHAT', payload: chat.id })}
+              className="history-item"
+              onClick={() => dispatch({ type: '@load_messages', payload: chat.id })}
             >
               <div className="chat-info">
                 <span className="chat-title">{chat.title}</span>
@@ -32,7 +32,7 @@ export function Sidebar() {
                 className="delete-btn"
                 onClick={(e) => {
                   e.stopPropagation();
-                  dispatch({ type: 'DELETE_CHAT', payload: chat.id });
+                  dispatch({ type: '@delete_chat', payload: chat.id });
                 }}
               >
                 ✕

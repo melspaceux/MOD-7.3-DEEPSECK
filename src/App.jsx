@@ -1,17 +1,17 @@
 import React from 'react';
-import { ChatProvider } from './context/ChatContext';
+import { GlobalProvider } from './context/global-context';
 import { Sidebar } from './components/Sidebar';
 import { ChatWindow } from './components/ChatWindow';
 import './App.css';
 
 function App() {
   return (
-    <ChatProvider>
+    <GlobalProvider>
       <div className="app-container">
         <Sidebar />
         <ChatWindow />
       </div>
-    </ChatProvider>
+    </GlobalProvider>
   );
 }
 

@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useChat } from '../context/ChatContext';
+import { useGlobal } from '../context/global-context';
 import { useOllama } from '../hooks/useOllama';
 
 export function ChatWindow() {
-  const { state } = useChat();
+  const { state } = useGlobal();
   const { sendMessage, loading } = useOllama();
   const [input, setInput] = useState('');
   const messagesEndRef = useRef(null);
@@ -14,7 +14,7 @@ export function ChatWindow() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [state.messages]);
+  }, [state.currentChat]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -31,19 +31,19 @@ export function ChatWindow() {
       </header>
 
       <div className="messages-container">
-        {state.messages.length === 0 ? (
+        {state.currentChat.length === 0 ? (
           <div className="welcome-screen">
             <h1>¿En qué puedo ayudarte hoy?</h1>
             <p>Escribe tu consulta para comenzar a interactuar con DeepSeek.</p>
           </div>
         ) : (
-          state.messages.map((msg, index) => (
+          state.currentChat.map((msg, index) => (
             <div key={index} className={`message-wrapper ${msg.role}`}>
               <div className="avatar">
                 {msg.role === 'user' ? '👤' : '🤖'}
               </div>
               <div className="message-content">
-                {msg.content || (loading && index === state.messages.length - 1 ? <span className="typing">...</span> : '')}
+                {msg.content || (loading && index === state.currentChat.length - 1 ? <span className="typing">...</span> : '')}
               </div>
             </div>
           ))
